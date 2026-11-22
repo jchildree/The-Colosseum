@@ -64,4 +64,14 @@ describe('refreshAccessToken rotation', () => {
     await expect(refreshAccessToken({ ...base, credService: 'challonge-refresh' }))
       .rejects.toThrow('CHALLONGE_CREDENTIAL_EXPIRED')
   })
+
+  it('uses client_credentials when there is no refresh token', async () => {
+    mockFetch.mockResolvedValue({ ok: true, json: async () => ({ access_token: 'app-access' }) })
+    const token = await refreshAccessToken({ ...base, refreshToken: '' })
+    expect(token).toBe('app-access')
+    const body = mockFetch.mock.calls[0][1].body as URLSearchParams
+    expect(body.get('grant_type')).toBe('client_credentials')
+    expect(body.get('scope')).toContain('tournaments:write')
+    expect(body.get('refresh_token')).toBeNull()
+  })
 })

@@ -37,8 +37,7 @@ export function registerIpcHandlers(): void {
   )
 
   ipcMain.handle('push-to-challonge', async () => {
-    const refreshToken = getCredential(CRED.challongeRefresh)
-    if (!refreshToken) throw new Error('Challonge not connected -- re-authenticate in Settings')
+    const refreshToken = getCredential(CRED.challongeRefresh) ?? ''
     const sync = readSync()
     const draft = readDraft()
     const tourney = readTourney()
