@@ -52,12 +52,14 @@ export async function updateGoogleForm(params: UpdateFormParams): Promise<void> 
   const { refreshToken, formId, tourney } = params
   const accessToken = await getToken(refreshToken)
 
-  const description = [
-    `Game: ${tourney.game || 'TBD'}`,
-    `Tournament Date: ${fmtDate(tourney.dateTime)}`,
-    `Signup Deadline: ${fmtDate(tourney.signupDeadline)}`,
-    `Players: ${tourney.minPlayers}-${tourney.maxPlayers}`,
-  ].join('\n')
+  const on = (k: keyof Tourney['enabledFields']): boolean => tourney.enabledFields?.[k] !== false
+  const lines: string[] = []
+  if (on('game')) lines.push(`Game: ${tourney.game || 'TBD'}`)
+  if (on('dateTime')) lines.push(`Tournament Date: ${fmtDate(tourney.dateTime)}`)
+  if (on('signupDeadline')) lines.push(`Signup Deadline: ${fmtDate(tourney.signupDeadline)}`)
+  if (on('minPlayers') && on('maxPlayers')) lines.push(`Players: ${tourney.minPlayers}-${tourney.maxPlayers}`)
+  const description = lines.join('\n')
+  const title = (on('name') && tourney.name) || 'Tournament Signup'
 
   const resp = await fetch(`${FORMS_BASE}/${encodeURIComponent(formId)}:batchUpdate`, {
     method: 'POST',
@@ -69,7 +71,7 @@ export async function updateGoogleForm(params: UpdateFormParams): Promise<void> 
       requests: [{
         updateFormInfo: {
           info: {
-            title: tourney.name || 'Tournament Signup',
+            title,
             description,
           },
           updateMask: 'title,description',
@@ -129,4 +131,13 @@ export async function fetchSignups(params: FetchSignupsParams): Promise<Signups>
       submittedAt: r.createTime,
     }
   })
+}
+
+/** Revokes the token at Google so disconnecting in the app removes access, not just the local copy. */
+export async function revokeGoogleToken(refreshToken: string): Promise<void> {
+  await fetch('https://oauth2.googleapis.com/revoke', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ token: refreshToken }),
+  }).catch(() => undefined) // best effort: still delete locally if offline
 }

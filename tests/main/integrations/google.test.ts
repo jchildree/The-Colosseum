@@ -41,6 +41,19 @@ describe('updateGoogleForm', () => {
     )
   })
 
+  it('omits fields toggled off from the form description', async () => {
+    mockFetch.mockResolvedValue({ ok: true, text: async () => '' })
+    await updateGoogleForm({
+      refreshToken: 'tok',
+      formId: 'form-abc',
+      tourney: { ...fakeTourney, game: 'Halo', enabledFields: { game: false } },
+    })
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string)
+    const description: string = body.requests[0].updateFormInfo.info.description
+    expect(description).not.toContain('Game:')
+    expect(description).toContain('Signup Deadline:')
+  })
+
   it('throws when Forms API returns error', async () => {
     mockFetch.mockResolvedValue({ ok: false, status: 400, text: async () => 'Bad Request' })
     await expect(
