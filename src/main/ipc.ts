@@ -38,6 +38,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('push-to-challonge', async () => {
     const refreshToken = getCredential(CRED.challongeRefresh) ?? ''
+    if (!refreshToken && !CHALLONGE_API_KEY) throw new Error('Challonge not connected -- re-authenticate in Settings')
     const sync = readSync()
     const draft = readDraft()
     const tourney = readTourney()
@@ -118,7 +119,6 @@ export function registerIpcHandlers(): void {
     if (!CHALLONGE_CLIENT_ID || !CHALLONGE_CLIENT_SECRET) {
       throw new Error('Challonge OAuth credentials not configured. Fill in oauth-config.ts.')
     }
-    if (CHALLONGE_API_KEY) return
     const { accessToken, refreshToken } = await beginChallongeOAuth(CHALLONGE_CLIENT_ID, CHALLONGE_CLIENT_SECRET)
     saveCredential(CRED.challonge, accessToken)
     saveCredential(CRED.challongeRefresh, refreshToken)
