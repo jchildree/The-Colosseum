@@ -170,9 +170,12 @@ function GoogleStep({ onNext }: { onNext: () => void }): JSX.Element {
 
 /* ── Challonge step ─────────────────────────────────── */
 
+const CHALLONGE_LOGIN_URL = 'https://challonge.com/users/sign_in'
+
 function ChallongeStep({ onNext }: { onNext: () => void }): JSX.Element {
   const [status, setStatus] = useState<'idle' | 'waiting' | 'done' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [signedIn, setSignedIn] = useState(false)
 
   async function handleConnect(): Promise<void> {
     setStatus('waiting')
@@ -194,7 +197,7 @@ function ChallongeStep({ onNext }: { onNext: () => void }): JSX.Element {
 
       <p style={{ color: 'var(--color-muted)', fontSize: '0.8rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
         Grant access to your Challonge account so the app can create and manage your tournament brackets.
-        A browser window will open for sign-in — you'll be redirected back automatically.
+        Sign in to Challonge first, then connect. You'll be redirected back automatically.
         Don't have an account?{' '}
         <a
           href="https://challonge.com/register"
@@ -206,6 +209,22 @@ function ChallongeStep({ onNext }: { onNext: () => void }): JSX.Element {
         </a>
         .
       </p>
+
+      {status !== 'done' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+          <button
+            onClick={() => void window.api.openExternal(CHALLONGE_LOGIN_URL)}
+            className="btn-gold"
+            style={{ width: '100%' }}
+          >
+            1. Open Challonge sign-in
+          </button>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--color-silver)' }}>
+            <input type="checkbox" checked={signedIn} onChange={e => setSignedIn(e.target.checked)} />
+            I'm signed in to Challonge
+          </label>
+        </div>
+      )}
 
       {status === 'waiting' && (
         <p style={{ color: 'var(--color-gold)', fontSize: '0.85rem', marginBottom: '1rem' }}>
@@ -223,11 +242,11 @@ function ChallongeStep({ onNext }: { onNext: () => void }): JSX.Element {
         {status !== 'done' ? (
           <button
             onClick={handleConnect}
-            disabled={status === 'waiting'}
+            disabled={status === 'waiting' || !signedIn}
             className="btn-gold"
             style={{ flex: 1 }}
           >
-            {status === 'waiting' ? 'Waiting for browser…' : 'Sign in with Challonge'}
+            {status === 'waiting' ? 'Waiting for browser…' : '2. Connect Challonge'}
           </button>
         ) : (
           <button onClick={onNext} className="btn-gold" style={{ flex: 1 }}>
