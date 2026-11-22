@@ -11,3 +11,4 @@ win:
 nsis:
   oneClick: false
   perMachine: false
+  include: build/installer.nsh

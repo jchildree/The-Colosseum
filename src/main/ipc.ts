@@ -2,7 +2,7 @@ import { ipcMain, shell } from 'electron'
 import { readTourney, saveTourney, readSignups, saveSignups, readDraft, saveDraft, readSync, saveSync, readDraftSession, saveDraftSession, buildDraftFromPicks, clearTournamentData, readConfig, saveConfig, readBalances, saveBalances, readPot, savePot } from './store'
 import { getCredential, saveCredential, deleteCredential } from './keychain'
 import { pushToChallonge, startTournament, startTournamentV1, fetchMatches, fetchMatchesV1, updateMatch, updateMatchV1 } from './integrations/challonge'
-import { updateGoogleForm, fetchSignups } from './integrations/google'
+import { updateGoogleForm, fetchSignups, revokeGoogleToken } from './integrations/google'
 import { beginGoogleOAuth } from './auth/google-oauth'
 import { beginChallongeOAuth } from './auth/challonge-oauth'
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, CHALLONGE_CLIENT_ID, CHALLONGE_CLIENT_SECRET, CHALLONGE_API_KEY } from './auth/oauth-config'
@@ -37,8 +37,8 @@ export function registerIpcHandlers(): void {
   )
 
   ipcMain.handle('push-to-challonge', async () => {
-    const refreshToken = getCredential(CRED.challongeRefresh)
-    if (!refreshToken) throw new Error('Challonge not connected -- re-authenticate in Settings')
+    const refreshToken = getCredential(CRED.challongeRefresh) ?? ''
+    if (!refreshToken && !CHALLONGE_API_KEY) throw new Error('Challonge not connected -- re-authenticate in Settings')
     const sync = readSync()
     const draft = readDraft()
     const tourney = readTourney()
@@ -158,7 +158,9 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('open-external', (_e, url: string) => shell.openExternal(url))
 
-  ipcMain.handle('disconnect-google', () => {
+  ipcMain.handle('disconnect-google', async () => {
+    const token = getCredential(CRED.google)
+    if (token) await revokeGoogleToken(token)
     deleteCredential(CRED.google)
   })
 

@@ -12,13 +12,19 @@ interface TokenRefreshOpts {
   credService?: CredentialService
 }
 
+const CLIENT_CREDENTIALS_SCOPE =
+  'me tournaments:read tournaments:write matches:read matches:write participants:read participants:write'
+
 export async function refreshAccessToken(opts: TokenRefreshOpts): Promise<string> {
+  // Empty refresh token = no browser sign-in: use the app's own client credentials (Challonge only).
+  const grant: Record<string, string> = opts.refreshToken
+    ? { grant_type: 'refresh_token', refresh_token: opts.refreshToken }
+    : { grant_type: 'client_credentials', scope: CLIENT_CREDENTIALS_SCOPE }
   const resp = await fetch(opts.tokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: opts.refreshToken,
+      ...grant,
       client_id: opts.clientId,
       client_secret: opts.clientSecret,
     }),
