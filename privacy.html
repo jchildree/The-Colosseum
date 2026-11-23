@@ -9,7 +9,7 @@
 <body>
   <h1>Privacy Policy - The Colosseum</h1>
 
-  <p>Last updated: June 13, 2026</p>
+  <p>Last updated: November 22, 2026</p>
 
   <h2>Overview</h2>
   <p>The Colosseum is a desktop application that helps administrators configure, draft, and publish custom video game tournaments. This policy explains what information the app handles, where it is stored, and how it is used.</p>
@@ -17,8 +17,8 @@
   <h2>Information We Collect</h2>
   <p>The app collects only information you enter directly:</p>
   <ul>
-    <li><strong>Google Forms access</strong>: OAuth permission to edit a specific Google Form template so the app can update tournament details. Only the minimum scope necessary is requested.</li>
-    <li><strong>Challonge credentials</strong>: Provided by the administrator to push the finalized bracket. Stored locally in an encrypted store or OS keychain.</li>
+    <li><strong>Google Forms access</strong>: with your permission, the app uses your Google account to access the one signup form you choose. See "Google user data" below for exactly what is accessed.</li>
+    <li><strong>Challonge sign-in</strong>: you sign in to Challonge and authorize the app. The resulting access tokens are used to push and run your bracket and are stored locally in an encrypted store or OS keychain.</li>
     <li><strong>Tournament metadata</strong>: name, dates, player lists — entered by the administrator to operate the app.</li>
   </ul>
 
@@ -29,7 +29,7 @@
   <p>Information you enter is used solely to:</p>
   <ul>
     <li>Display your tournament dashboard within the app</li>
-    <li>Update your Google Form with tournament details via the Google Forms API</li>
+    <li>Update the title and description of your Google Form with tournament details, and import your form's signups, via the Google Forms API</li>
     <li>Create and update your Challonge bracket via the Challonge REST API</li>
   </ul>
   <p>No information is used for advertising, profiling, or any purpose beyond operating the app's features.</p>
@@ -42,7 +42,7 @@
       See <a href="https://fandom.com/privacy-policy" target="_blank" rel="noopener noreferrer">Fandom's Privacy Policy</a>.
     </li>
     <li>
-      <strong>Google (Alphabet Inc.)</strong> - receives tournament configuration data to update your Google Form.
+      <strong>Google (Alphabet Inc.)</strong> - receives the form title and description the app writes to your signup form.
       See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>.
     </li>
   </ul>
@@ -63,8 +63,20 @@
   <h2>Changes to This Policy</h2>
   <p>If this policy changes materially, we will update the "Last updated" date above. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
 
-  <h2>Scope & purpose of Google access</h2>
-  <p>The app requests only the scopes needed to update a specific Google Form template (to set title, date/time, and form questions) and to read responses if required. Tokens are used only on the local machine to perform those actions and are not published publicly.</p>
+  <h2>Google user data</h2>
+  <p>The Colosseum requests two Google Forms permissions (OAuth scopes). It uses them only on the single signup form you choose, and for no other purpose:</p>
+  <ul>
+    <li><strong>forms.body</strong> (see, edit, create, and delete your Google Forms): used only to read the form's question list, to find the Name and Discord questions, and to update the form's title and description with your tournament details. The app does not create or delete forms and does not edit questions.</li>
+    <li><strong>forms.responses.readonly</strong> (see all responses to your Google Forms): used only to import each respondent's name, Discord handle, and submission time as tournament signups.</li>
+  </ul>
+  <p>The app does not access any other Google data, such as Drive files, email, contacts, or calendar.</p>
+  <p>Imported signups are stored only on your device and are used only to run your tournament. Your Google refresh token is stored only on your device.</p>
+
+  <h2>Limited Use</h2>
+  <p>The Colosseum's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements. Specifically, we do not use Google user data for advertising, do not sell it, do not transfer it to third parties except as needed to provide the features you use or to comply with law, and no person reads it except as you direct inside the app.</p>
+
+  <h2>Disconnecting and revoking Google access</h2>
+  <p>You can disconnect Google at any time with <strong>Disconnect</strong> in the app's Settings. This revokes the app's access at Google and deletes the token from your device. You can also remove access at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.</p>
 
   <h2>Contact</h2>
   <p>Questions about this privacy policy? Contact: <a href="mailto:jchildree87@gmail.com">jchildree87@gmail.com</a></p>
